@@ -2,3 +2,8 @@
 Data
 x64
 .vs
+Core/Core.vcxproj
+Core/Core.vcxproj.filters
+Core/Core.vcxproj.user
+Core/eigen-3.3.8.props
+Core/pcl1.9.1_64x.props
