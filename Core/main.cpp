@@ -32,9 +32,11 @@ void test_func(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
 	}
 	if (1)
 	{
+		pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
 		pcl::PointCloud<pcl::PointXYZ>::Ptr outCloud(new pcl::PointCloud<pcl::PointXYZ>);
 		outCloud = makeSampling::samplingPoints(cloud, DOWN_SAMPLING);
 		fileIOStream::saveCloudfile("../Data/cloud_down.pcd", outCloud);
+		pclVisualization::viewVisualiz(outCloud, normals);
 	}
 
 }
@@ -45,7 +47,7 @@ int main(int argc, char** argv)
 	std::string outPath = R"(../Data/out.pcd)";
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 	fileIOStream::readCloudfile(filePath, *cloud);
-	std::cout << "Point size: " << cloud->size() << std::endl;
+	std::cout << ":===========Function start===========: "<< std::endl;
 
 	test_func(cloud);
 
