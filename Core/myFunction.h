@@ -128,15 +128,16 @@ namespace makeSampling
 	{
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloudDst(new pcl::PointCloud<pcl::PointXYZ>);
 		// Uniform sampling object.
-		//pcl::UniformSampling<pcl::PointXYZ> filter;
-		//filter.setInputCloud(cloud);
-		//filter.setRadiusSearch(0.01f);
-		//// We need an additional object to store the indices of surviving points.
-		//pcl::PointCloud<int> keypointIndices;
+		pcl::UniformSampling<pcl::PointXYZ> filter;
+		filter.setInputCloud(cloud);
+		filter.setRadiusSearch(0.01f);
+		// We need an additional object to store the indices of surviving points.
+		pcl::PointCloud<int> keypointIndices;
 
 
 		//filter.compute(keypointIndices);
 		//pcl::copyPointCloud(*cloud, keypointIndices.points, *cloudDst);
+		filter.filter(*cloudDst);
 		return cloudDst;
 	}
 
@@ -357,6 +358,33 @@ namespace pclVisualization
 			viewer->spinOnce();
 			boost::this_thread::sleep(boost::posix_time::microseconds(100000));
 		}
+		return SYSTEM_SUCESS;
+	}
+}
+///Filterling
+namespace Filterling
+{
+	//outlier Remove
+	bool pclOutlierRemovalfilter(pcl::PointCloud<pcl::PointXYZ>::Ptr incloud, pcl::PointCloud<pcl::PointXYZ>::Ptr outcloud,NegativeORPositive flags)
+	{
+		pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
+		sor.setInputCloud(incloud);
+		sor.setMeanK(50); //邻近点数个数
+		sor.setStddevMulThresh(1.0);//? 阈值	
+		switch (flags)
+		{
+		case NEGATIVE:
+			sor.setNegative(NEGATIVE);
+			break;
+		case POSITIVE:
+			sor.setNegative(POSITIVE);
+			break;
+		default:
+			sor.setNegative(NEGATIVE);
+			break;
+		}
+		sor.filter(*outcloud);
+
 		return SYSTEM_SUCESS;
 	}
 }

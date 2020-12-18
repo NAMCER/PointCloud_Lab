@@ -26,6 +26,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/cloud_viewer.h>
 
+#include <pcl/filters/statistical_outlier_removal.h>
 ///VTK///
 //#include <vtkAutoInit.h>
 //#include <vtkPoints.h>
@@ -62,4 +63,10 @@ enum Sampling_Type
 	DOWN_SAMPLING = 1,
 	UNIFORM_SAMPLING = 2,
 	UP_SAMPLING = 3,
+};
+
+enum NegativeORPositive
+{
+	NEGATIVE = 0,
+	POSITIVE = 1,
 };

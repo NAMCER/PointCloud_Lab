@@ -30,7 +30,7 @@ void test_func(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
 		pclVisualization::viewVisualiz(cloud, normals);
 
 	}
-	if (1)
+	if (0)
 	{
 		pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
 		pcl::PointCloud<pcl::PointXYZ>::Ptr outCloud(new pcl::PointCloud<pcl::PointXYZ>);
@@ -38,12 +38,19 @@ void test_func(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
 		fileIOStream::saveCloudfile("../Data/cloud_down.pcd", outCloud);
 		pclVisualization::viewVisualiz(outCloud, normals);
 	}
+	if (1)
+	{
+		pcl::PointCloud<pcl::PointXYZ>::Ptr outCloud(new pcl::PointCloud<pcl::PointXYZ>);
+		//Filterling
+		Filterling::pclOutlierRemovalfilter(cloud, outCloud, NEGATIVE);
+		fileIOStream::saveCloudfile("../Data/OutlierRemovalfilter.pcd", outCloud);
+	}
 
 }
 
 int main(int argc, char** argv)
 {
-	std::string filePath = R"(../Data/1.pcd)";
+	std::string filePath = R"(../Data/table_scene_lms400.pcd)";
 	std::string outPath = R"(../Data/out.pcd)";
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 	fileIOStream::readCloudfile(filePath, *cloud);
@@ -51,6 +58,7 @@ int main(int argc, char** argv)
 
 	test_func(cloud);
 
+	std::cout << ":=========== Function end ===========: " << std::endl;
 	system("pause");
 	return (0);
 }
