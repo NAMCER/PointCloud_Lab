@@ -38,12 +38,16 @@ void test_func(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
 		fileIOStream::saveCloudfile("../Data/cloud_down.pcd", outCloud);
 		pclVisualization::viewVisualiz(outCloud, normals);
 	}
-	if (1)
+	if (0)
 	{
 		pcl::PointCloud<pcl::PointXYZ>::Ptr outCloud(new pcl::PointCloud<pcl::PointXYZ>);
 		//Filterling
 		Filterling::pclOutlierRemovalfilter(cloud, outCloud, NEGATIVE);
 		fileIOStream::saveCloudfile("../Data/OutlierRemovalfilter.pcd", outCloud);
+	}
+	if (1)
+	{
+		KeyPointExtract::NARF_P(cloud);
 	}
 
 }

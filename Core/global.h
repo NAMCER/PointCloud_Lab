@@ -27,6 +27,15 @@
 #include <pcl/visualization/cloud_viewer.h>
 
 #include <pcl/filters/statistical_outlier_removal.h>
+
+#include <boost/thread/thread.hpp>  
+#include <pcl/range_image/range_image.h>   
+#include <pcl/visualization/range_image_visualizer.h>   
+#include <pcl/features/range_image_border_extractor.h>  
+#include <pcl/keypoints/narf_keypoint.h>  
+#include <pcl/features/narf_descriptor.h> 
+#include <pcl/console/parse.h> 
+
 ///VTK///
 //#include <vtkAutoInit.h>
 //#include <vtkPoints.h>
