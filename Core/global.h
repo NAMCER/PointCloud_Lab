@@ -36,6 +36,8 @@
 #include <pcl/features/narf_descriptor.h> 
 #include <pcl/console/parse.h> 
 
+#include <pcl/octree/octree.h>
+
 ///VTK///
 //#include <vtkAutoInit.h>
 //#include <vtkPoints.h>

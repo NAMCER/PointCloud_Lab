@@ -313,8 +313,11 @@ namespace Calculate3Dfeaturs
 		pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> nv;
 		nv.setInputCloud(cloud);
 		//set search method
-		pcl::search::KdTree<pcl::PointXYZ>::Ptr kdt(new pcl::search::KdTree<pcl::PointXYZ>);
-		nv.setSearchMethod(kdt);
+		//pcl::search::KdTree<pcl::PointXYZ>::Ptr kdt(new pcl::search::KdTree<pcl::PointXYZ>);
+		//nv.setSearchMethod(kdt);
+		
+		pcl::search::Octree<pcl::PointXYZ> octree(128.0f);
+		octree.setInputCloud(cloud);
 		//save output data
 		//pcl::PointCloud<pcl::Normal>::Ptr locNormals(new pcl::PointCloud<pcl::Normal>);	
 		nv.setRadiusSearch(0.4);
@@ -455,4 +458,136 @@ namespace KeyPointExtract
 			pcl_sleep(0.01);
 		}
 	}
+}
+
+//test
+namespace testFunc
+{
+
+	bool octreeTest(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
+	{
+
+		pcl::PointCloud<pcl::PointXYZRGB>::Ptr Localcloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+		/*
+		{
+
+			// Generate pointcloud data
+			Localcloud->width = 100000;
+			Localcloud->height = 1;
+			Localcloud->points.resize(Localcloud->width * Localcloud->height);
+#pragma omp parallel for 
+			for (int i = 0; i < Localcloud->points.size(); ++i)
+			{
+				Localcloud->points[i].x = 1024.0f * rand() / (RAND_MAX + 1.0f);
+				Localcloud->points[i].y = 1024.0f * rand() / (RAND_MAX + 1.0f);
+				Localcloud->points[i].z = 1024.0f * rand() / (RAND_MAX + 1.0f);
+
+				Localcloud->points[i].r = 255;
+				Localcloud->points[i].g = 255;
+				Localcloud->points[i].b = 255;
+			}
+
+		}
+		*/
+
+		Localcloud->width = cloud->points.size();
+		Localcloud->height = 1;
+		Localcloud->points.resize(Localcloud->width * Localcloud->height);
+
+#pragma omp parallel for 
+		for (int i = 0; i < cloud->points.size(); ++i)
+		{
+			Localcloud->points[i].x = cloud->points[i].x;
+			Localcloud->points[i].y = cloud->points[i].y;
+			Localcloud->points[i].z = cloud->points[i].z;
+
+			Localcloud->points[i].r = 255;
+			Localcloud->points[i].g = 255;
+			Localcloud->points[i].b = 255;
+		}
+
+		float resolution = 0.1f;//设置octree体素分辨率
+		pcl::octree::OctreePointCloudSearch<pcl::PointXYZRGB> octree(resolution);//建立octree对象
+		octree.setInputCloud(Localcloud);//传入需要建立octree的点云指针
+		//octree.defineBoundingBox();
+		//octree.defineBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+		octree.addPointsFromInputCloud();  //构建Octree
+		// create a virtual searchPoint
+		//pcl::PointXYZ searchPoint(-0.221520, 0.121360, -1.195600);
+		// create a virtual searchPoint
+
+		pcl::PointXYZRGB searchPoint(-0.362300, 0.190920, -1.315000);
+		// Neighbors within voxel search
+		std::vector<int> pointIdxVec;
+
+		if (octree.voxelSearch(searchPoint, pointIdxVec))
+		{
+			std::cout << "Neighbors within voxel search at (" << searchPoint.x
+				<< " " << searchPoint.y
+				<< " " << searchPoint.z << ")"
+				<< std::endl;
+#pragma omp parallel for
+			for (int i = 0; i < pointIdxVec.size(); ++i)
+			{
+				Localcloud->points[pointIdxVec[i]].r = 255;
+				Localcloud->points[pointIdxVec[i]].g = 0;
+				Localcloud->points[pointIdxVec[i]].b = 0;
+			}
+
+		}
+		// K nearest neighbor search
+		searchPoint = pcl::PointXYZRGB(-0.314320, -0.504410, -1.514100);
+		int K = 100;
+		std::vector<int> pointIdxNKNSearch;
+		std::vector<float> pointNKNSquaredDistance;
+
+		std::cout << "K nearest neighbor search at (" << searchPoint.x
+			<< " " << searchPoint.y
+			<< " " << searchPoint.z
+			<< ") with K=" << K << std::endl;
+
+		if (octree.nearestKSearch(searchPoint, K, pointIdxNKNSearch, pointNKNSquaredDistance) > 0)
+		{
+#pragma omp parallel for 
+			for (int i = 0; i < pointIdxNKNSearch.size(); ++i)
+			{
+				Localcloud->points[pointIdxNKNSearch[i]].r = 0;
+				Localcloud->points[pointIdxNKNSearch[i]].g = 255;
+				Localcloud->points[pointIdxNKNSearch[i]].b = 0;
+			}
+		}
+
+		// Neighbors within radius search
+		searchPoint = pcl::PointXYZRGB(0.289600, 0.141260, -1.231900);
+		std::vector<int> pointIdxRadiusSearch;
+		std::vector<float> pointRadiusSquaredDistance;
+		float radius = 256.0f * rand() / (RAND_MAX + 1.0f);
+		std::cout << "Neighbors within radius search at (" << searchPoint.x
+			<< " " << searchPoint.y
+			<< " " << searchPoint.z
+			<< ") with radius=" << radius << std::endl;
+
+		if (octree.radiusSearch(searchPoint, radius, pointIdxRadiusSearch, pointRadiusSquaredDistance) > 0)
+		{
+#pragma omp parallel for
+			for (int i = 0; i < pointIdxRadiusSearch.size(); ++i)
+			{
+				Localcloud->points[pointIdxRadiusSearch[i]].r = 0;
+				Localcloud->points[pointIdxRadiusSearch[i]].g = 0;
+				Localcloud->points[pointIdxRadiusSearch[i]].b = 255;
+			}
+
+		}
+
+		pcl::visualization::CloudViewer viewer("cloud viewer");
+		viewer.showCloud(Localcloud);
+
+		system("pause");
+
+		octree.deleteTree();
+
+		return SYSTEM_SUCESS;
+
+	}
+
 }

@@ -45,11 +45,14 @@ void test_func(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
 		Filterling::pclOutlierRemovalfilter(cloud, outCloud, NEGATIVE);
 		fileIOStream::saveCloudfile("../Data/OutlierRemovalfilter.pcd", outCloud);
 	}
-	if (1)
+	if (0)
 	{
 		KeyPointExtract::NARF_P(cloud);
 	}
-
+	if (1)
+	{
+		testFunc::octreeTest(cloud);
+	}
 }
 
 int main(int argc, char** argv)
