@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="FPFH_Align.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="myFunction.h" />
   </ItemGroup>

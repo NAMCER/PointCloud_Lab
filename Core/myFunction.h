@@ -460,6 +460,59 @@ namespace KeyPointExtract
 	}
 }
 
+/// svd Rotation and translation
+namespace MY_SVD
+{
+	//pcl::PointCloud<pcl::PointXYZ>::Ptr cloud
+	void pose_estimation_3d3d(pcl::PointCloud<pcl::PointXYZ>::Ptr pts1
+		, pcl::PointCloud<pcl::PointXYZ>::Ptr pts2
+		, Eigen::Matrix3d &R
+		, Eigen::Vector3d &t)
+	{
+		Eigen::Vector3f Pcenter1 = Eigen::Vector3f::Zero();
+		int pts1_size = pts1->size();
+		int pts2_size = pts2->size();
+		for (auto iter : pts1->points)
+		{
+			Pcenter1[0] += iter.x;
+			Pcenter1[1] += iter.y;
+			Pcenter1[2] += iter.z;
+		}
+		Pcenter1 /= pts1->points.size();
+		std::cout << "pts1 center :" << Pcenter1[0] << "," << Pcenter1[1] << "," << Pcenter1[2] << std::endl;
+
+		std::vector<pcl::PointXYZ> q1(pts1_size);
+		for (int i = 0; i<pts1_size; ++i)
+		{
+			q1[i].x =pts1->points[i].x - Pcenter1[0];
+			q1[i].y = pts1->points[i].y - Pcenter1[1];
+			q1[i].z = pts1->points[i].z - Pcenter1[2];
+		}
+
+		Eigen::Vector3f Pcenter2 = Eigen::Vector3f::Zero();
+		for (auto iter:pts2->points)
+		{
+			Pcenter2[0] += iter.x;
+			Pcenter2[1] += iter.y;
+			Pcenter2[2] += iter.z;
+		}
+		Pcenter2 /= pts2->points.size();
+		std::cout << "pts2 center :" << Pcenter2[0] << "," << Pcenter2[1] << "," << Pcenter2[2] << std::endl;
+		
+		std::vector<pcl::PointXYZ> q2(pts2_size);
+		for (int i = 0; i < pts2_size; ++i)
+		{
+			q2[i].x = pts2->points[i].x - Pcenter2[0];
+			q2[i].y = pts2->points[i].y - Pcenter2[1];
+			q2[i].z = pts2->points[i].z - Pcenter2[2];
+		}
+
+
+
+
+	}
+}
+
 //test
 namespace testFunc
 {
