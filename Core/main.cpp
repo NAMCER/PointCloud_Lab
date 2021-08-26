@@ -49,9 +49,15 @@ void test_func(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
 	{
 		KeyPointExtract::NARF_P(cloud);
 	}
-	if (1)
+	if (0)
 	{
 		testFunc::octreeTest(cloud);
+	}
+	if (1)
+	{
+		std::string source_path = R"(C:\Users\cnlnz\Desktop\TEST\chef_5_point.pcd)";
+		std::string target_path = R"(C:\Users\cnlnz\Desktop\TEST\chef_cut_half_trans.pcd)";
+		FPFHalign::runPFPHalign(source_path,target_path);
 	}
 }
 
