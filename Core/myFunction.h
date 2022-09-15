@@ -40,6 +40,59 @@ cRandom my_random(int z)
 ///IO File///
 namespace fileIOStream
 {
+	///获取文件夹下的所有文件，返回个文件的路径
+	void getFile(std::string path ,std::vector<std::string> &files)
+	{
+		intptr_t hFile = 0;
+		struct _finddata_t fileinfo;
+		std::string p;
+		if((hFile =_findfirst(p.assign(path).append("\\*").c_str(),&fileinfo))!=-1)
+			{
+				do 
+				{
+					if ((fileinfo.attrib & _A_SUBDIR))
+					{
+						if (strcmp(fileinfo.name,".") != 0 && strcmp(fileinfo.name,"..") != 0)
+						{
+							getFile(p.assign(path).append("\\").append(fileinfo.name), files);
+						}
+					}
+					else
+					{
+						files.push_back(path + "\\" + fileinfo.name);
+					}
+				} while (_findnext(hFile,&fileinfo) == 0);
+				_findclose(hFile);
+			}
+	}
+
+	///获取文件夹下的所有文件，返回个文件的路径与文件名
+	void getFile2(std::string path, std::vector<std::string> &files,std::vector<string> &ownname)
+	{
+		intptr_t hFile = 0;  //long type for windows 7
+		struct _finddata_t fileinfo;
+		std::string p;
+		if ((hFile = _findfirst(p.assign(path).append("\\*").c_str(), &fileinfo)) != -1)
+		{
+			do
+			{
+				if ((fileinfo.attrib & _A_SUBDIR))
+				{
+					if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
+					{
+						getFile2(p.assign(path).append("\\").append(fileinfo.name), files,ownname);
+					}
+				}
+				else
+				{
+					files.push_back(path + "\\" + fileinfo.name);
+					ownname.push_back(fileinfo.name);
+				}
+			} while (_findnext(hFile, &fileinfo) == 0);
+			_findclose(hFile);
+		}
+	}
+	
 	///Read point cloud data
 	bool readCloudfile(boost::filesystem::path readPath, pcl::PointCloud<pcl::PointXYZ>& outcloud)
 	{
